@@ -47,14 +47,25 @@
             return document.querySelectorAll(query);
         }
     }, _Checkboxes = function () {
-        this.checkboxes = _domQueries.checkboxes();
+        var checkboxes = _domQueries.checkboxes();
         this.fill = function () {
             var i = 0;
             while (i < 5) {
-                this.checkboxes[i].click();
+                checkboxes[i].click();
                 i++;
             }
         }
+    }, _TimeInputs = function (row) {
+        var timeInputs = _domQueries.timeInputs(row);
+        this.fill = function (in_value, out_value) {
+            var values = [in_value, out_value], i = 0;
+            while (i < 2) {
+                timeInputs[i].value = values[i];
+                timeInputs[i].focus();
+                timeInputs[i].blur();
+                i++;
+            }
+        };
     };
 
 
@@ -72,13 +83,11 @@
     }
 
     function _fillInFirstRow(row) {
-        var timeInputs = _domQueries.timeInputs(row),
+        var timeInputs = new _TimeInputs(row),
             select = _domQueries.select(row),
             popup, menuItems;
 
-        timeInputs[0].value = '08:00';
-        timeInputs[1].value = '12:00';
-
+        timeInputs.fill('12:30', '16:30');
 
         select.click();
         popup = _domQueries.selectPopup(select);
@@ -87,9 +96,8 @@
     }
 
     function _fillInSecondRow(row) {
-        var timeInputs = _domQueries.timeInputs(row)
-        timeInputs[0].value = '12:30';
-        timeInputs[1].value = '16:30';
+        var timeInputs = new _TimeInputs(row);
+        timeInputs.fill('12:30', '16:30');
     }
 
 
@@ -116,4 +124,3 @@
 
     main();
 })();
-
