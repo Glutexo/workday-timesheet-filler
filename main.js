@@ -3,7 +3,7 @@
 // @namespace    http://github.com/Glutexo/
 // @version      0.1
 // @description  Fills in timesheets in the Workday app.
-// @author       Glutexo
+// @author       Glutexog
 // @match        https://wd5.myworkday.com/*
 // @grant        none
 // ==/UserScript==
@@ -11,14 +11,26 @@
 
 (function() {
     'use strict';
-
-    function _domGetCheckboxes() {
-        var queries = [
-            '[data-automation-id=fieldSetContent]',
-            '[data-automation-id=checkboxPanel]'
-        ], query = queries.join(' ');
-        return document.querySelectorAll(query);
-    }
+    
+    var _domQueries = {
+	checkboxes: function () {
+            var queries = [
+		'[data-automation-id=fieldSetContent]',
+		'[data-automation-id=checkboxPanel]'
+            ], query = queries.join(' ');
+            return document.querySelectorAll(query);
+	}
+    },
+	Checkboxes = function () {
+	    this.checkboxes = _domQueries.checkboxes();
+	    this.fill = function () {
+		var i = 0;
+		while (i < 5) {
+		    this.checkboxes[i].click();
+		    i++;
+		}
+	    }
+	};
 
     function _domGetForm() {
         return document.querySelector('[data-automation-id=panelSet]');
@@ -87,6 +99,7 @@
         timeInputs[1].value = '16:30';
     }
 
+
     function _fillEverything() {
         var form = _domGetForm(),
             addButton = _domGetAddButton(form),
@@ -99,11 +112,8 @@
             _fillInSecondRow(rows[1]);
         }, 1000);
 
-        checkboxes = _domGetCheckboxes();
-        while(i < checkboxes.length) {
-            checkboxes[i].click();
-            i++;
-        }
+        checkboxes = new Checkboxes();
+        checkboxes.fill();
     }
 
     function main() {
