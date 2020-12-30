@@ -3,7 +3,7 @@
 // @namespace    http://github.com/Glutexo/
 // @version      0.1
 // @description  Fills in timesheets in the Workday app.
-// @author       Glutexog
+// @author       Glutexo
 // @match        https://wd5.myworkday.com/*
 // @grant        none
 // ==/UserScript==
@@ -12,15 +12,9 @@
 (function() {
     'use strict';
 
-    var _domQueries = {
-        form: function () {
-            return document.querySelector('[data-automation-id=panelSet]');
-        },
-        addButton: function (form) {
-            return form.querySelector('[data-automation-id=panelSetAddButton]')
-        },
-        entryRows: function (form) {
-            return form.querySelectorAll('[data-automation-id=panelSetRow]');
+    const _domQueries = {
+        body: function () {
+            return document.querySelector('body');
         },
         select: function (row) {
             return row.querySelector('[data-automation-id=selectWidget]');
@@ -46,6 +40,18 @@
             ], query = queries.join(' ');
             return document.querySelectorAll(query);
         }
+    },
+    _domManipulations = {
+        createElement: function (tagName, properties, style) {
+            const _element = document.createElement(tagName);
+            for (const [key, value] of Object.entries(properties)) {
+                _element[key] = value;
+            }
+            for (const [key, value] of Object.entries(style)) {
+                _element.style[key] = value;
+            }
+            return _element;
+        }
     }, _Checkboxes = function () {
         var checkboxes = _domQueries.checkboxes();
         this.fill = function () {
@@ -68,58 +74,147 @@
         };
     };
 
-
-    function _domCreateButton(caption) {
-        var button = document.createElement('button');
-        button.style['color'] = '#fff';
-        button.style['background-color'] = '#000';
-        button.style['position'] = 'absolute';
-        button.style['top'] = 0;
-        button.style['left'] = 0;
-        button.style['z-index'] = 1000;
-        button.innerText = caption;
-        document.querySelector('body').appendChild(button);
-        return button;
+    const ui = {};
+    ui.FillButton = function (callback) {
+        const style = {
+            color: '#fff',
+            backgroundColor: '#000',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+        }, properties = {
+            innerText: 'Fill'
+        };
+        this._button = _domManipulations.createElement('button', properties, style);
+        this._callback = callback;
     }
-
-    function _fillInFirstRow(row) {
-        var timeInputs = new _TimeInputs(row),
-            select = _domQueries.select(row),
-            popup, menuItems;
-
-        timeInputs.fill('12:30', '16:30');
-
-        select.click();
-        popup = _domQueries.selectPopup(select);
-        menuItems = _domQueries.menuItems(popup);
-        setTimeout(function() { menuItems[1].click(); }, 1000);
+    ui.FillButton.prototype._insert = function () {
+        const body = _domQueries.body();
+        body.appendChild(this._button);
     }
-
-    function _fillInSecondRow(row) {
-        var timeInputs = new _TimeInputs(row);
-        timeInputs.fill('12:30', '16:30');
+    ui.FillButton.prototype._listen = function () {
+        this._button.addEventListener('click', this._callback);
     }
-
-
-    function _fillEverything() {
-        var form = _domQueries.form(),
-            addButton = _domQueries.addButton(form),
-            rows, checkboxes, i = 0;
-
-        addButton.click();
-        setTimeout(function() {
-            rows = _domQueries.entryRows(form);
-            _fillInFirstRow(rows[0]);
-            _fillInSecondRow(rows[1]);
-        }, 1000);
-
-        checkboxes = new _Checkboxes();
-        checkboxes.fill();
+    ui.FillButton.prototype.setUp = function () {
+        this._insert();
+        this._listen();
     }
 
     function main() {
-        var button = _domCreateButton('Fill');
-        button.addEventListener('click', _fillEverything);
+        function fillEntryList() {
+            function domGetForm() {
+                return document.querySelector('[data-automation-id=panelSet]');
+            }
+
+            function domGetEntryRows() {
+                return form.querySelectorAll('[data-automation-id=panelSetRow]');
+            }
+
+            function domGetRemoveButton(row) {
+                return row.querySelector('[data-automation-id=panelSetRowDeleteButton]');
+            }
+
+            function domGetAddButton() {
+                return form.querySelector('[data-automation-id=panelSetAddButton]')
+            }
+
+            function removeRow(row) {
+                var button = domGetRemoveButton(row);
+                button.click();
+            }
+
+            function removeLastRow(rows) {
+                var row = rows[rows.length - 1];
+                removeRow(row);
+            }
+
+            function addRow() {
+                if (!addButton) {
+                    addButton = domGetAddButton(form);
+                }
+                addButton.click();
+            }
+
+            function fillRowData(rows) {
+                function fillInFirst(row) {
+                    var timeInputs = new _TimeInputs(row),
+                        select = _domQueries.select(row),
+                        popup, menuItems;
+
+                    timeInputs.fill('08:00', '12:00');
+
+                    select.click();
+                    popup = _domQueries.selectPopup(select);
+                    menuItems = _domQueries.menuItems(popup);
+                    setTimeout(function() { menuItems[1].click(); }, 1000);
+                }
+
+                function fillInSecond(row) {
+                    var timeInputs = new _TimeInputs(row);
+                    timeInputs.fill('12:30', '16:30');
+                }
+
+                fillInFirst(rows[0]);
+                fillInSecond(rows[1]);
+            }
+
+            function fillEntryRows() {
+                var rows = domGetEntryRows();
+
+                if (rows.length > 2) {
+                    removeLastRow(rows);
+                    return false;
+                } else if(rows.length < 2) {
+                    addRow();
+                    return false;
+                } else {
+                    fillRowData(rows);
+                    return true;
+                }
+            }
+
+            function observeEntryList() {
+                function domGetEntryList() {
+                    return form.querySelector('ul');
+                }
+
+                function handleMutation(mutation, index, allMutations) {
+                    if (mutation.type == "childList" && mutation.target == entryList) {
+                        var done = fillEntryRows();
+                        if (done) {
+                            mutationObserver.disconnect();
+                        }
+                    }
+                }
+
+                function callback(mutations, observer) {
+                    mutations.forEach(handleMutation);
+                }
+
+                var entryList = domGetEntryList(),
+                    mutationObserver = new MutationObserver(callback);
+                mutationObserver.observe(entryList, {childList: true});
+            }
+
+            var form = domGetForm(),
+                addButton;
+
+            observeEntryList();
+            fillEntryRows();
+        }
+
+        function fillCheckboxes() {
+            var checkboxes = new _Checkboxes();
+            checkboxes.fill();
+        }
+
+        function run() {
+            fillEntryList();
+            fillCheckboxes();
+        }
+
+        new ui.FillButton(run).setUp();
     }
 
     main();
