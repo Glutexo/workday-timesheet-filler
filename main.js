@@ -12,10 +12,19 @@
 (function() {
     'use strict';
 
+    const dom = {}
+    dom.Body = function () {
+        this.element = document.querySelector('body');
+    }
+    dom.Body.prototype.checkboxes = function () {
+        const queries = [
+            '[data-automation-id=fieldSetContent]',
+            '[data-automation-id=checkboxPanel]'
+        ], query = queries.join(' ');
+        return this.element.querySelectorAll(query);
+    }
+
     const _domQueries = {
-        body: function () {
-            return document.querySelector('body');
-        },
         select: function (row) {
             return row.querySelector('[data-automation-id=selectWidget]');
         },
@@ -33,13 +42,6 @@
         menuItems: function (popup) {
             return popup.querySelectorAll('[data-automation-id=menuItem]');
         },
-        checkboxes: function () {
-            var queries = [
-                '[data-automation-id=fieldSetContent]',
-                '[data-automation-id=checkboxPanel]'
-            ], query = queries.join(' ');
-            return document.querySelectorAll(query);
-        }
     },
     _domManipulations = {
         createElement: function (tagName, properties, style) {
@@ -51,15 +53,6 @@
                 _element.style[key] = value;
             }
             return _element;
-        }
-    }, _Checkboxes = function () {
-        var checkboxes = _domQueries.checkboxes();
-        this.fill = function () {
-            var i = 0;
-            while (i < 5) {
-                checkboxes[i].click();
-                i++;
-            }
         }
     }, _TimeInputs = function (row) {
         var timeInputs = _domQueries.timeInputs(row);
@@ -75,7 +68,11 @@
     };
 
     const ui = {};
-    ui.FillButton = function (callback) {
+    ui.FillButton = function (callback, body) {
+        this._callback = callback;
+        this._body = body;
+    }
+    ui.FillButton.prototype._create = function () {
         const style = {
             color: '#fff',
             backgroundColor: '#000',
@@ -86,19 +83,18 @@
         }, properties = {
             innerText: 'Fill'
         };
-        this._button = _domManipulations.createElement('button', properties, style);
-        this._callback = callback;
+        return _domManipulations.createElement('button', properties, style);
     }
-    ui.FillButton.prototype._insert = function () {
-        const body = _domQueries.body();
-        body.appendChild(this._button);
+    ui.FillButton.prototype._insert = function (button) {
+        this._body.element.appendChild(button);
     }
-    ui.FillButton.prototype._listen = function () {
-        this._button.addEventListener('click', this._callback);
+    ui.FillButton.prototype._listen = function (button) {
+        button.addEventListener('click', this._callback);
     }
     ui.FillButton.prototype.setUp = function () {
-        this._insert();
-        this._listen();
+        const button = this._create();
+        this._insert(button);
+        this._listen(button);
     }
 
     function main() {
@@ -205,16 +201,21 @@
         }
 
         function fillCheckboxes() {
-            var checkboxes = new _Checkboxes();
-            checkboxes.fill();
+            const checkboxes = body.checkboxes();
+            let i = 0;
+            while (i < 5) {
+                checkboxes[i].click();
+                i++;
+            }
         }
 
-        function run() {
+        function fill() {
             fillEntryList();
             fillCheckboxes();
         }
 
-        new ui.FillButton(run).setUp();
+        const body = new dom.Body();
+        new ui.FillButton(fill, body).setUp();
     }
 
     main();
