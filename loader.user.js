@@ -20,7 +20,7 @@
 
     var timestamp = Date.now(),
         queryParam = encodeURIComponent(timestamp),
-        url = `http://localhost:8000/main.user.js?${timestamp}`;
+        url = `http://localhost:8000/main.user.js?${queryParam}`;
     GM.xmlHttpRequest({
         method: "GET",
         url: url,
