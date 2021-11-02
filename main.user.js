@@ -66,6 +66,10 @@
         );
         return new dom.Button(element);
     };
+    dom.Row.prototype.remove = function () {
+        const button = this.removeButton();
+        button.click();
+    };
 
     dom.Button = function (element) {
         this.element = element;
@@ -157,14 +161,9 @@
 
     function main() {
         function fillEntryList() {
-            function removeRow(row) {
-                const button = row.removeButton();
-                button.click();
-            }
-
             function removeLastRow(rows) {
                 const row = rows.items[rows.itemslength - 1];
-                removeRow(row);
+                row.remove();
             }
 
             function addRow() {
