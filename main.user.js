@@ -1,14 +1,3 @@
-// ==UserScript==
-// @name         Workday Timesheet Filler
-// @namespace    http://github.com/Glutexo/
-// @version      0.1
-// @description  Fills in timesheets in the Workday app.
-// @author       Glutexo
-// @match        https://wd5.myworkday.com/*
-// @grant        none
-// ==/UserScript==
-
-
 (function() {
     'use strict';
 
@@ -67,12 +56,14 @@
         };
     };
 
-    const ui = {};
-    ui.FillButton = function (callback, body) {
-        this._callback = callback;
-        this._body = body;
-    }
-    ui.FillButton.prototype._create = function () {
+    const ui = {
+	setUpFillButton: function (body, callback) {
+            const button = this.create();
+            this.insert(body, button);
+            this.listen(button, callback);
+	}
+    };
+    ui.setUpFillButton.create = function () {
         const style = {
             color: '#fff',
             backgroundColor: '#000',
@@ -85,17 +76,13 @@
         };
         return _domManipulations.createElement('button', properties, style);
     }
-    ui.FillButton.prototype._insert = function (button) {
-        this._body.element.appendChild(button);
+    ui.setUpFillButton.insert = function (body, button) {
+        body.element.appendChild(button);
     }
-    ui.FillButton.prototype._listen = function (button) {
-        button.addEventListener('click', this._callback);
+    ui.setUpFillButton.listen = function (button, callback) {
+        button.addEventListener('click', callback);
     }
-    ui.FillButton.prototype.setUp = function () {
-        const button = this._create();
-        this._insert(button);
-        this._listen(button);
-    }
+    ui.setUpFillButton = ui.setUpFillButton.bind(ui.setUpFillButton)
 
     function main() {
         function fillEntryList() {
@@ -215,7 +202,7 @@
         }
 
         const body = new dom.Body();
-        new ui.FillButton(fill, body).setUp();
+	    ui.setUpFillButton(body, fill);
     }
 
     main();
