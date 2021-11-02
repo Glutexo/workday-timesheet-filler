@@ -42,7 +42,7 @@
         const element = this.element.querySelector(
             '[data-automation-id=panelSetAddButton]'
         );
-        return new dom.AddButton(element);
+        return new dom.Button(element);
     };
 
     dom.EntryList = function (element) {
@@ -60,11 +60,17 @@
     dom.Row = function (element) {
         this.element = element;
     };
+    dom.Row.prototype.removeButton = function () {
+        const element = this.element.querySelector(
+            '[data-automation-id=panelSetRowDeleteButton]'
+        );
+        return new dom.Button(element);
+    };
 
-    dom.AddButton = function (element) {
+    dom.Button = function (element) {
         this.element = element;
     };
-    dom.AddButton.prototype.click = function () {
+    dom.Button.prototype.click = function () {
         this.element.click();
     };
 
@@ -151,12 +157,8 @@
 
     function main() {
         function fillEntryList() {
-            function domGetRemoveButton(row) {
-                return row.querySelector('[data-automation-id=panelSetRowDeleteButton]');
-            }
-
             function removeRow(row) {
-                var button = domGetRemoveButton(row.element);
+                const button = row.removeButton();
                 button.click();
             }
 
