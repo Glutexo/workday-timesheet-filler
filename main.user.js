@@ -10,26 +10,55 @@
         const queryParts = [
             '[data-automation-id=fieldSetContent]',
             '[data-automation-id=checkboxPanel]'
-        ], query = queryParts.join(' ');
-        return this.element.querySelectorAll(query);
+        ], query = queryParts.join(' '),
+        elements = this.element.querySelectorAll(query);
+        return new dom.Checkboxes(elements);
+    };
+    dom.Body.prototype.form = function () {
+        const element = this.element.querySelector(
+            '[data-automation-id=panelSet]'
+        );
+        return new dom.Form(element);
     };
 
-    dom.Form = function (body) {
-        this.element = body.querySelector('[data-automation-id=panelSet]');
+    dom.Checkboxes = function (elements) {
+        this.elements = elements;
+    };
+
+    dom.Form = function (element) {
+        this.element = element;
     };
     dom.Form.prototype.entryList = function () {
-        return this.element.querySelector('ul');
+        const element = this.element.querySelector('ul');
+        return new dom.EntryList(element);
     };
     dom.Form.prototype.rows = function () {
-        return this.element.querySelectorAll(
+        const elements = this.element.querySelectorAll(
             '[data-automation-id=panelSetRow]'
         );
+        return new dom.Rows(elements);
     };
     dom.Form.prototype.addButton = function () {
-        return this.element.querySelector(
+        const element = this.element.querySelector(
             '[data-automation-id=panelSetAddButton]'
         );
+        return new dom.AddButton(element);
     };
+
+    dom.EntryList = function (element) {
+        this.element = element;
+    };
+
+    dom.Rows = function (elements) {
+        this.elements = elements;
+    }
+
+    dom.AddButton = function (element) {
+        this.element = element;
+    }
+    dom.AddButton.prototype.click = function () {
+        this.element.click();
+    }
 
     const _domQueries = {
         select: function (row) {
@@ -124,7 +153,7 @@
             }
 
             function removeLastRow(rows) {
-                var row = rows[rows.length - 1];
+                const row = rows[rows.length - 1];
                 removeRow(row);
             }
 
@@ -161,22 +190,25 @@
             function fillEntryRows() {
                 const rows = form.rows();
 
-                if (rows.length > 2) {
-                    removeLastRow(rows);
+                if (rows.elements.length > 2) {
+                    removeLastRow(rows.elements);
                     return false;
-                } else if(rows.length < 2) {
+                } else if(rows.elements.length < 2) {
                     addRow();
                     return false;
                 } else {
-                    fillRowData(rows);
+                    fillRowData(rows.elements);
                     return true;
                 }
             }
 
             function observeEntryList() {
                 function handleMutation(mutation, index, allMutations) {
-                    if (mutation.type == "childList" && mutation.target == entryList) {
-                        var done = fillEntryRows();
+                    if (
+                        mutation.type === "childList" &&
+                        mutation.target === entryList.element
+                    ) {
+                        const done = fillEntryRows();
                         if (done) {
                             mutationObserver.disconnect();
                         }
@@ -187,13 +219,16 @@
                     mutations.forEach(handleMutation);
                 }
 
-                var entryList = form.entryList(),
+                const entryList = form.entryList(),
                     mutationObserver = new MutationObserver(callback);
-                mutationObserver.observe(entryList, {childList: true});
+                mutationObserver.observe(
+                    entryList.element,
+                    {childList: true}
+                );
             }
 
-            var form = new dom.Form(body.element),
-                addButton;
+            const form = body.form();
+            let addButton;
 
             observeEntryList();
             fillEntryRows();
@@ -203,7 +238,7 @@
             const checkboxes = body.checkboxes();
             let i = 0;
             while (i < 5) {
-                checkboxes[i].click();
+                checkboxes.elements[i].click();
                 i++;
             }
         }
