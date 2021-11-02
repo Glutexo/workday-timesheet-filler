@@ -32,19 +32,28 @@
         menuItems: function (popup) {
             return popup.querySelectorAll('[data-automation-id=menuItem]');
         },
-    },
-    _domManipulations = {
-        createElement: function (tagName, properties, style) {
-            const _element = document.createElement(tagName);
-            for (const [key, value] of Object.entries(properties)) {
-                _element[key] = value;
-            }
-            for (const [key, value] of Object.entries(style)) {
-                _element.style[key] = value;
-            }
-            return _element;
+    };
+
+    const domManipulations = {};
+
+    domManipulations.createElement = function (tagName, properties, style) {
+        const _element = document.createElement(tagName);
+        for (const [key, value] of Object.entries(properties)) {
+            _element[key] = value;
         }
-    }, _TimeInputs = function (row) {
+        for (const [key, value] of Object.entries(style)) {
+            _element.style[key] = value;
+        }
+        return _element;
+    };
+    domManipulations.addElement = function (parent, child) {
+        parent.appendChild(child);
+    };
+    domManipulations.addOnClick = function (element, callback) {
+        element.addEventListener('click', callback);
+    };
+
+    const _TimeInputs = function (row) {
         var timeInputs = _domQueries.timeInputs(row);
         this.fill = function (in_value, out_value) {
             var values = [in_value, out_value], i = 0;
@@ -59,12 +68,14 @@
 
     const ui = {};
 
-    ui.setUpFillButton = function (body, callback) {
-        const button = this.create();
-        this.insert(body, button);
-        this.listen(button, callback);
-    }
-    ui.setUpFillButton.create = function () {
+    ui.FillButton = function () {
+        this.button = this._create();
+    };
+    ui.FillButton.prototype.setUp = function (body, callback) {
+        this._insert(body, this.button);
+        this._listen(this.button, callback);
+    };
+    ui.FillButton.prototype._create = function () {
         const properties = {
             innerText: 'Fill'
         }, style = {
@@ -75,15 +86,14 @@
             left: 0,
             zIndex: 1000,
         };
-        return _domManipulations.createElement('button', properties, style);
+        return domManipulations.createElement('button', properties, style);
     };
-    ui.setUpFillButton.insert = function (body, button) {
-        body.element.appendChild(button);
+    ui.FillButton.prototype._insert = function (body, button) {
+        domManipulations.addElement(body, button)
     };
-    ui.setUpFillButton.listen = function (button, callback) {
-        button.addEventListener('click', callback);
+    ui.FillButton.prototype._listen = function (button, callback) {
+        domManipulations.addOnClick(button, callback)
     };
-    ui.setUpFillButton = ui.setUpFillButton.bind(ui.setUpFillButton);
 
     function main() {
         function fillEntryList() {
@@ -202,8 +212,8 @@
             fillCheckboxes();
         }
 
-        const body = new dom.Body();
-	    ui.setUpFillButton(body, fill);
+        const body = new dom.Body(), fillButton = new ui.FillButton();
+	    fillButton.setUp(body.element, fill);
     }
 
     main();
