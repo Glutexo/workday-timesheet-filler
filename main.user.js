@@ -3,8 +3,13 @@
 
     const dom = {};
 
-    dom.Body = function () {
-        this.element = document.querySelector('body');
+    dom.body = function () {
+        const element = document.querySelector('body');
+        return new dom.Body(element);
+    }
+
+    dom.Body = function (element) {
+        this.element = element;
     };
     dom.Body.prototype.checkboxes = function () {
         const queryParts = [
@@ -253,7 +258,7 @@
             fillCheckboxes();
         }
 
-        const body = new dom.Body(), fillButton = new ui.FillButton();
+        const body = new dom.body(), fillButton = new ui.FillButton();
 	    fillButton.setUp(body.element, fill);
     }
 
