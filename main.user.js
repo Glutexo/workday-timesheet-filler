@@ -65,15 +65,15 @@
 	    }
     };
     ui.setUpFillButton.create = function () {
-        const style = {
+        const properties = {
+            innerText: 'Fill'
+        }, style = {
             color: '#fff',
             backgroundColor: '#000',
             position: 'absolute',
             top: 0,
             left: 0,
             zIndex: 1000,
-        }, properties = {
-            innerText: 'Fill'
         };
         return _domManipulations.createElement('button', properties, style);
     };
