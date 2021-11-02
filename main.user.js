@@ -1,16 +1,16 @@
 (function() {
     'use strict';
 
-    const dom = {
-        Body: function () {
-            this.element = document.querySelector('body');
-        }
+    const dom = {};
+
+    dom.Body = function () {
+        this.element = document.querySelector('body');
     };
     dom.Body.prototype.checkboxes = function () {
-        const queries = [
+        const queryParts = [
             '[data-automation-id=fieldSetContent]',
             '[data-automation-id=checkboxPanel]'
-        ], query = queries.join(' ');
+        ], query = queryParts.join(' ');
         return this.element.querySelectorAll(query);
     };
 
@@ -57,13 +57,13 @@
         };
     };
 
-    const ui = {
-    	setUpFillButton: function (body, callback) {
-            const button = this.create();
-            this.insert(body, button);
-            this.listen(button, callback);
-	    }
-    };
+    const ui = {};
+
+    ui.setUpFillButton = function (body, callback) {
+        const button = this.create();
+        this.insert(body, button);
+        this.listen(button, callback);
+    }
     ui.setUpFillButton.create = function () {
         const properties = {
             innerText: 'Fill'
