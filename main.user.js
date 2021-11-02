@@ -66,7 +66,7 @@
         }
     };
     dom.Rows.prototype.last = function () {
-        const index = this.itemslength - 1;
+        const index = this.items.length - 1;
         return this.items[index];
     };
 
