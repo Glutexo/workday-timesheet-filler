@@ -27,6 +27,7 @@
 
     dom.Form = function (element) {
         this.element = element;
+        this._addButton = this.addButton();
     };
     dom.Form.prototype.entryList = function () {
         const element = this.element.querySelector('ul');
@@ -44,6 +45,9 @@
         );
         return new dom.Button(element);
     };
+    dom.Form.prototype.addRow = function () {
+        this._addButton.click();
+    }
 
     dom.EntryList = function (element) {
         this.element = element;
@@ -189,13 +193,14 @@
             }
 
             function fillEntryRows() {
-                const rows = form.rows();
+                const rows = form.rows(),
+                    targetLength = 2;
 
-                if (rows.items.length > 2) {
+                if (rows.items.length > targetLength) {
                     rows.last().remove();
                     return false;
-                } else if(rows.items.length < 2) {
-                    addButton.click();
+                } else if(rows.items.length < targetLength) {
+                    form.addRow();
                     return false;
                 } else {
                     fillRowData(rows);
@@ -228,8 +233,7 @@
                 );
             }
 
-            const form = body.form(),
-                addButton = form.addButton();
+            const form = body.form();
 
             observeEntryList();
             fillEntryRows();
