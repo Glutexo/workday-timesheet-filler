@@ -56,6 +56,10 @@
             this.items.push(row);
         }
     };
+    dom.Rows.prototype.last = function () {
+        const index = this.itemslength - 1;
+        return this.items[index];
+    };
 
     dom.Row = function (element) {
         this.element = element;
@@ -161,18 +165,6 @@
 
     function main() {
         function fillEntryList() {
-            function removeLastRow(rows) {
-                const row = rows.items[rows.itemslength - 1];
-                row.remove();
-            }
-
-            function addRow() {
-                if (!addButton) {
-                    addButton = form.addButton();
-                }
-                addButton.click();
-            }
-
             function fillRowData(rows) {
                 function fillInFirst(row) {
                     var timeInputs = new _TimeInputs(row),
@@ -200,10 +192,10 @@
                 const rows = form.rows();
 
                 if (rows.items.length > 2) {
-                    removeLastRow(rows);
+                    rows.last().remove();
                     return false;
                 } else if(rows.items.length < 2) {
-                    addRow();
+                    addButton.click();
                     return false;
                 } else {
                     fillRowData(rows);
@@ -236,8 +228,8 @@
                 );
             }
 
-            const form = body.form();
-            let addButton;
+            const form = body.form(),
+                addButton = form.addButton();
 
             observeEntryList();
             fillEntryRows();
