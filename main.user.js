@@ -14,6 +14,23 @@
         return this.element.querySelectorAll(query);
     };
 
+    dom.Form = function (body) {
+        this.element = body.querySelector('[data-automation-id=panelSet]');
+    };
+    dom.Form.prototype.entryList = function () {
+        return this.element.querySelector('ul');
+    };
+    dom.Form.prototype.rows = function () {
+        return this.element.querySelectorAll(
+            '[data-automation-id=panelSetRow]'
+        );
+    };
+    dom.Form.prototype.addButton = function () {
+        return this.element.querySelector(
+            '[data-automation-id=panelSetAddButton]'
+        );
+    };
+
     const _domQueries = {
         select: function (row) {
             return row.querySelector('[data-automation-id=selectWidget]');
@@ -97,20 +114,8 @@
 
     function main() {
         function fillEntryList() {
-            function domGetForm() {
-                return document.querySelector('[data-automation-id=panelSet]');
-            }
-
-            function domGetEntryRows() {
-                return form.querySelectorAll('[data-automation-id=panelSetRow]');
-            }
-
             function domGetRemoveButton(row) {
                 return row.querySelector('[data-automation-id=panelSetRowDeleteButton]');
-            }
-
-            function domGetAddButton() {
-                return form.querySelector('[data-automation-id=panelSetAddButton]')
             }
 
             function removeRow(row) {
@@ -125,7 +130,7 @@
 
             function addRow() {
                 if (!addButton) {
-                    addButton = domGetAddButton(form);
+                    addButton = form.addButton();
                 }
                 addButton.click();
             }
@@ -154,7 +159,7 @@
             }
 
             function fillEntryRows() {
-                var rows = domGetEntryRows();
+                const rows = form.rows();
 
                 if (rows.length > 2) {
                     removeLastRow(rows);
@@ -169,10 +174,6 @@
             }
 
             function observeEntryList() {
-                function domGetEntryList() {
-                    return form.querySelector('ul');
-                }
-
                 function handleMutation(mutation, index, allMutations) {
                     if (mutation.type == "childList" && mutation.target == entryList) {
                         var done = fillEntryRows();
@@ -186,12 +187,12 @@
                     mutations.forEach(handleMutation);
                 }
 
-                var entryList = domGetEntryList(),
+                var entryList = form.entryList(),
                     mutationObserver = new MutationObserver(callback);
                 mutationObserver.observe(entryList, {childList: true});
             }
 
-            var form = domGetForm(),
+            var form = new dom.Form(body.element),
                 addButton;
 
             observeEntryList();
