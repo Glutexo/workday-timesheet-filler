@@ -50,15 +50,23 @@
     };
 
     dom.Rows = function (elements) {
-        this.elements = elements;
-    }
+        this.items = [];
+        for (const element of elements) {
+            const row = new dom.Row(element);
+            this.items.push(row);
+        }
+    };
+
+    dom.Row = function (element) {
+        this.element = element;
+    };
 
     dom.AddButton = function (element) {
         this.element = element;
-    }
+    };
     dom.AddButton.prototype.click = function () {
         this.element.click();
-    }
+    };
 
     const _domQueries = {
         select: function (row) {
@@ -148,12 +156,12 @@
             }
 
             function removeRow(row) {
-                var button = domGetRemoveButton(row);
+                var button = domGetRemoveButton(row.element);
                 button.click();
             }
 
             function removeLastRow(rows) {
-                const row = rows[rows.length - 1];
+                const row = rows.items[rows.itemslength - 1];
                 removeRow(row);
             }
 
@@ -183,21 +191,21 @@
                     timeInputs.fill('12:30', '16:30');
                 }
 
-                fillInFirst(rows[0]);
-                fillInSecond(rows[1]);
+                fillInFirst(rows.items[0].element);
+                fillInSecond(rows.items[1].element);
             }
 
             function fillEntryRows() {
                 const rows = form.rows();
 
-                if (rows.elements.length > 2) {
-                    removeLastRow(rows.elements);
+                if (rows.items.length > 2) {
+                    removeLastRow(rows);
                     return false;
-                } else if(rows.elements.length < 2) {
+                } else if(rows.items.length < 2) {
                     addRow();
                     return false;
                 } else {
-                    fillRowData(rows.elements);
+                    fillRowData(rows);
                     return true;
                 }
             }
