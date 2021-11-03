@@ -137,6 +137,12 @@
             element = document.querySelector(query)
         return new dom.Popup(element);
     };
+    dom.Select.prototype.select = function (index) {
+        let menuItems;
+        this.open();
+        menuItems = this.popup().menuItems();
+        setTimeout(function() { menuItems[index].click(); }, 1000);
+    }
 
     dom.Popup = function (element) {
         this.element = element;
@@ -213,14 +219,8 @@
         function fillEntryList() {
             function fillRowData(rows) {
                 function fillInFirst(row) {
-                    const select = row.select();
-                    let menuItems;
-
                     row.timeInputs().fill('08:00', '12:00');
-
-                    select.open();
-                    menuItems = select.popup().menuItems();
-                    setTimeout(function() { menuItems[1].click(); }, 1000);
+                    row.select().select(1);
                 }
 
                 function fillInSecond(row) {
