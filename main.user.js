@@ -128,6 +128,13 @@
     dom.Select.prototype.open = function () {
         this.element.click();
     };
+    dom.Select.prototype.popup = function () {
+        const selectors = [
+            '[data-automation-id=selectWidget-SuggestionPopup]',
+            `[data-associated-widget='${this.element.id}']`
+        ], query = selectors.join('');
+        return document.querySelector(query);
+    };
 
     dom.Input = function (element) {
         this.element = element;
@@ -146,14 +153,6 @@
     };
 
     const _domQueries = {
-        selectPopup: function (select) {
-            var queries = [
-                '[data-automation-id=selectWidget-SuggestionPopup]',
-                '[data-associated-widget=\'' + select.id + '\']'
-            ];
-            var query = queries.join(',');
-            return document.querySelector(query);
-        },
         menuItems: function (popup) {
             return popup.querySelectorAll('[data-automation-id=menuItem]');
         },
@@ -217,7 +216,7 @@
                     row.timeInputs().fill('08:00', '12:00');
 
                     select.open();
-                    popup = _domQueries.selectPopup(select.element);
+                    popup = select.popup();
                     menuItems = _domQueries.menuItems(popup);
                     setTimeout(function() { menuItems[1].click(); }, 1000);
                 }
