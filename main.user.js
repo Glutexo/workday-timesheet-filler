@@ -129,11 +129,20 @@
         this.element.click();
     };
     dom.Select.prototype.popup = function () {
-        const selectors = [
-            '[data-automation-id=selectWidget-SuggestionPopup]',
-            `[data-associated-widget='${this.element.id}']`
-        ], query = selectors.join('');
-        return document.querySelector(query);
+        const id = CSS.escape(this.element.id),
+            selectors = [
+                '[data-automation-id=selectWidget-SuggestionPopup]',
+                `[data-associated-widget='${id}']`
+            ], query = selectors.join(''),
+            element = document.querySelector(query)
+        return new dom.Popup(element);
+    };
+
+    dom.Popup = function (element) {
+        this.element = element;
+    };
+    dom.Popup.prototype.menuItems = function () {
+        return this.element.querySelectorAll('[data-automation-id=menuItem]');
     };
 
     dom.Input = function (element) {
@@ -150,12 +159,6 @@
     };
     dom.Button.prototype.click = function () {
         this.element.click();
-    };
-
-    const _domQueries = {
-        menuItems: function (popup) {
-            return popup.querySelectorAll('[data-automation-id=menuItem]');
-        },
     };
 
     const domManipulations = {};
@@ -211,13 +214,12 @@
             function fillRowData(rows) {
                 function fillInFirst(row) {
                     const select = row.select();
-                    let popup, menuItems;
+                    let menuItems;
 
                     row.timeInputs().fill('08:00', '12:00');
 
                     select.open();
-                    popup = select.popup();
-                    menuItems = _domQueries.menuItems(popup);
+                    menuItems = select.popup().menuItems();
                     setTimeout(function() { menuItems[1].click(); }, 1000);
                 }
 
