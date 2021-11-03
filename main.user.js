@@ -130,27 +130,21 @@
         this.element.click();
     };
     dom.Select.prototype.select = function (index) {
-        const selector = new dom.Selector(this, index)
-        selector.select();
-    }
-
-    dom.Selector = function (select, index) {
-        this._select = select;
-        this.index = index;
-    };
-    dom.Selector.prototype.select = function () {
         const body = document.querySelector('body'),
-            observer = new MutationObserver(this._callback),
-            options = {childList: true};
-        observer.observe(body, options);
-        this._select.open();
+            callback = this._popupCallback(index),
+            observer = new MutationObserver(callback);
+        observer.observe(body, {childList: true});
+        this.open();
     };
-    dom.Selector.prototype._callback = function (mutations, observer) {
-        const popupElement = mutations[0].addedNodes[0],
-            popup = new dom.Popup(popupElement),
-            menuItem = popup.menuItems()[this.index];
-        observer.disconnect();
-        setTimeout(menuItem.click, 1000);
+    dom.Select.prototype._popupCallback = function (index) {
+        function callback(mutations, observer) {
+            const popupElement = mutations[0].addedNodes[0],
+                popup = new dom.Popup(popupElement),
+                menuItem = popup.menuItems()[index];
+            observer.disconnect();
+            setTimeout(() => menuItem.click(), 1000);
+        }
+        return callback;
     };
 
     dom.Popup = function (element) {
