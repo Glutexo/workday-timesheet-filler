@@ -83,9 +83,15 @@
         this.element = element;
     };
     dom.Row.prototype.timeInputs = function () {
-        return row.querySelectorAll(
+        const elements = row.querySelectorAll(
             '[data-automation-id=standaloneTimeWidget] input'
         );
+        let inputs = [];
+        for (const element of elements) {
+            const input = new dom.Input(element);
+            inputs.push(input);
+        }
+        return inputs;
     };
     dom.Row.prototype.removeButton = function () {
         const element = this.element.querySelector(
@@ -96,6 +102,15 @@
     dom.Row.prototype.remove = function () {
         const button = this.removeButton();
         button.click();
+    };
+
+    dom.Input = function (element) {
+        this.element = element;
+    };
+    dom.Input.prototype.fill = function (value) {
+        this.element.focus();
+        this.element.value = value;
+        this.element.blur();
     };
 
     dom.Button = function (element) {
@@ -144,11 +159,10 @@
     const _TimeInputs = function (row) {
         const timeInputs = row.timeInputs();
         this.fill = function (in_value, out_value) {
-            var values = [in_value, out_value], i = 0;
+            const values = [in_value, out_value];
+            let i = 0;
             while (i < 2) {
-                timeInputs[i].value = values[i];
-                timeInputs[i].focus();
-                timeInputs[i].blur();
+                timeInputs[i].fill(values[i]);
                 i++;
             }
         };
