@@ -137,14 +137,25 @@
         this.open();
     };
     dom.Select.prototype._popupCallback = function (index) {
-        function callback(mutations, observer) {
+        return (mutations, popupObserver) => {
             const popupElement = mutations[0].addedNodes[0],
-                popup = new dom.Popup(popupElement),
+                clickCallback = this._clickCallback(index),
+                clickObserver = new MutationObserver(clickCallback);
+            popupObserver.disconnect();
+            clickObserver.observe(popupElement, {attributes: true});
+        };
+    };
+    dom.Select.prototype._clickCallback = function (index) {
+        return (mutations, clickObserver) => {
+            const popupElement = mutations[0].target;
+            if (popupElement.style.transform) {
+                return; // Opening animation still running.
+            }
+            const popup = new dom.Popup(popupElement),
                 menuItem = popup.menuItems()[index];
-            observer.disconnect();
-            setTimeout(() => menuItem.click(), 1000);
-        }
-        return callback;
+            clickObserver.disconnect();
+            menuItem.click();
+        };
     };
 
     dom.Popup = function (element) {
