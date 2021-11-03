@@ -125,6 +125,7 @@
     dom.Select = function (element) {
         this.element = element;
     };
+    dom.Select.prototype.MEAL = 1;
     dom.Select.prototype.open = function () {
         this.element.click();
     };
@@ -219,8 +220,9 @@
         function fillEntryList() {
             function fillRowData(rows) {
                 function fillInFirst(row) {
+                    const select = row.select();
                     row.timeInputs().fill('08:00', '12:00');
-                    row.select().select(1);
+                    select.select(select.MEAL);
                 }
 
                 function fillInSecond(row) {
