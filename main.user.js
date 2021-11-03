@@ -154,14 +154,14 @@
     const domManipulations = {};
 
     domManipulations.createElement = function (tagName, properties, style) {
-        const _element = document.createElement(tagName);
+        const element = document.createElement(tagName);
         for (const [key, value] of Object.entries(properties)) {
-            _element[key] = value;
+            element[key] = value;
         }
         for (const [key, value] of Object.entries(style)) {
-            _element.style[key] = value;
+            element.style[key] = value;
         }
-        return _element;
+        return element;
     };
     domManipulations.addElement = function (parent, child) {
         parent.appendChild(child);
