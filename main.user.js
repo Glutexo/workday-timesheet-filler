@@ -83,7 +83,7 @@
         this.element = element;
     };
     dom.Row.prototype.timeInputs = function () {
-        const elements = row.querySelectorAll(
+        const elements = this.element.querySelectorAll(
             '[data-automation-id=standaloneTimeWidget] input'
         );
         let inputs = [];
@@ -202,7 +202,7 @@
             function fillRowData(rows) {
                 function fillInFirst(row) {
                     var timeInputs = new _TimeInputs(row),
-                        select = _domQueries.select(row.elements),
+                        select = _domQueries.select(row.element),
                         popup, menuItems;
 
                     timeInputs.fill('08:00', '12:00');
