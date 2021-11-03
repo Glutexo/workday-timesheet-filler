@@ -5,7 +5,6 @@
 // @description  Fills in timesheets in the Workday app.
 // @author       Glutexo
 // @match        https://wd5.myworkday.com/*
-// @grant        GM.xmlHttpRequest
 // ==/UserScript==
 
 (function() {
