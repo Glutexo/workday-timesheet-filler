@@ -86,12 +86,7 @@
         const elements = this.element.querySelectorAll(
             '[data-automation-id=standaloneTimeWidget] input'
         );
-        let inputs = [];
-        for (const element of elements) {
-            const input = new dom.Input(element);
-            inputs.push(input);
-        }
-        return inputs;
+        return new dom.TimeInputs(elements);
     };
     dom.Row.prototype.removeButton = function () {
         const element = this.element.querySelector(
@@ -102,6 +97,18 @@
     dom.Row.prototype.remove = function () {
         const button = this.removeButton();
         button.click();
+    };
+
+    dom.TimeInputs = function (elements) {
+        this.elements = elements;
+    };
+    dom.TimeInputs.prototype.inputs = function () {
+        let inputs = [];
+        for (const element of this.elements) {
+            const input = new dom.Input(element);
+            inputs.push(input);
+        }
+        return inputs;
     };
 
     dom.Input = function (element) {
@@ -157,7 +164,7 @@
     };
 
     const _TimeInputs = function (row) {
-        const timeInputs = row.timeInputs();
+        const timeInputs = row.timeInputs().inputs();
         this.fill = function (in_value, out_value) {
             const values = [in_value, out_value];
             let i = 0;
