@@ -88,6 +88,10 @@
         );
         return new dom.TimeInputs(elements);
     };
+    dom.Row.prototype.select = function () {
+        let element = this.element.querySelector('[data-automation-id=selectWidget]');
+        return new dom.Select(element);
+    };
     dom.Row.prototype.removeButton = function () {
         const element = this.element.querySelector(
             '[data-automation-id=panelSetRowDeleteButton]'
@@ -101,9 +105,9 @@
 
     dom.TimeInputs = function (elements) {
         this.elements = elements;
-        this.IN = 0;
-        this.OUT = 1;
     };
+    dom.TimeInputs.prototype.IN = 0;
+    dom.TimeInputs.prototype.OUT = 1;
     dom.TimeInputs.prototype.inputs = function () {
         let inputs = [];
         for (const element of this.elements) {
@@ -116,6 +120,13 @@
         const inputs = this.inputs();
         inputs[this.IN].fill(in_value);
         inputs[this.OUT].fill(out_value);
+    };
+
+    dom.Select = function (element) {
+        this.element = element;
+    };
+    dom.Select.prototype.open = function () {
+        this.element.click();
     };
 
     dom.Input = function (element) {
@@ -135,9 +146,6 @@
     };
 
     const _domQueries = {
-        select: function (row) {
-            return row.querySelector('[data-automation-id=selectWidget]');
-        },
         selectPopup: function (select) {
             var queries = [
                 '[data-automation-id=selectWidget-SuggestionPopup]',
@@ -203,13 +211,13 @@
         function fillEntryList() {
             function fillRowData(rows) {
                 function fillInFirst(row) {
-                    const select = _domQueries.select(row.element);
+                    const select = row.select();
                     let popup, menuItems;
 
                     row.timeInputs().fill('08:00', '12:00');
 
-                    select.click();
-                    popup = _domQueries.selectPopup(select);
+                    select.open();
+                    popup = _domQueries.selectPopup(select.element);
                     menuItems = _domQueries.menuItems(popup);
                     setTimeout(function() { menuItems[1].click(); }, 1000);
                 }
