@@ -82,6 +82,11 @@
     dom.Row = function (element) {
         this.element = element;
     };
+    dom.Row.prototype.timeInputs = function () {
+        return row.querySelectorAll(
+            '[data-automation-id=standaloneTimeWidget] input'
+        );
+    };
     dom.Row.prototype.removeButton = function () {
         const element = this.element.querySelector(
             '[data-automation-id=panelSetRowDeleteButton]'
@@ -112,9 +117,6 @@
             var query = queries.join(',');
             return document.querySelector(query);
         },
-        timeInputs: function (row) {
-            return row.querySelectorAll('[data-automation-id=standaloneTimeWidget] input');
-        },
         menuItems: function (popup) {
             return popup.querySelectorAll('[data-automation-id=menuItem]');
         },
@@ -140,7 +142,7 @@
     };
 
     const _TimeInputs = function (row) {
-        var timeInputs = _domQueries.timeInputs(row);
+        const timeInputs = row.timeInputs();
         this.fill = function (in_value, out_value) {
             var values = [in_value, out_value], i = 0;
             while (i < 2) {
@@ -186,7 +188,7 @@
             function fillRowData(rows) {
                 function fillInFirst(row) {
                     var timeInputs = new _TimeInputs(row),
-                        select = _domQueries.select(row),
+                        select = _domQueries.select(row.elements),
                         popup, menuItems;
 
                     timeInputs.fill('08:00', '12:00');
@@ -202,8 +204,8 @@
                     timeInputs.fill('12:30', '16:30');
                 }
 
-                fillInFirst(rows.items[0].element);
-                fillInSecond(rows.items[1].element);
+                fillInFirst(rows.items[0]);
+                fillInSecond(rows.items[1]);
             }
 
             function fillEntryRows() {
