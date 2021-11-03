@@ -13,7 +13,7 @@
 
     function onload(response) {
         var element = document.createElement("script");
-        element.innerText = response.responseText;
+        element.innerHTML = response.responseText;
         document.body.appendChild(element);
     }
 
