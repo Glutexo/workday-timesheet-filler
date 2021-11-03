@@ -2,6 +2,8 @@
 
 This script fills timesheets in Workday. It is very crude and still requires non-trivial amount of manual work. Use at your own risk.
 
+Tested only on Safari. 
+
 ## How to use ##
 
 Install [_main.user.js_](main.user.js) into Tampermonkey. Then, a black “Fill” button appears in the top-left corner of the Workday app.
