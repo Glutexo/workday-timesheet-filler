@@ -101,6 +101,8 @@
 
     dom.TimeInputs = function (elements) {
         this.elements = elements;
+        this.IN = 0;
+        this.OUT = 1;
     };
     dom.TimeInputs.prototype.inputs = function () {
         let inputs = [];
@@ -109,6 +111,11 @@
             inputs.push(input);
         }
         return inputs;
+    };
+    dom.TimeInputs.prototype.fill = function (in_value, out_value) {
+        const inputs = this.inputs();
+        inputs[this.IN].fill(in_value);
+        inputs[this.OUT].fill(out_value);
     };
 
     dom.Input = function (element) {
@@ -163,18 +170,6 @@
         element.addEventListener('click', callback);
     };
 
-    const _TimeInputs = function (row) {
-        const timeInputs = row.timeInputs().inputs();
-        this.fill = function (in_value, out_value) {
-            const values = [in_value, out_value];
-            let i = 0;
-            while (i < 2) {
-                timeInputs[i].fill(values[i]);
-                i++;
-            }
-        };
-    };
-
     const ui = {};
 
     ui.FillButton = function () {
@@ -208,11 +203,10 @@
         function fillEntryList() {
             function fillRowData(rows) {
                 function fillInFirst(row) {
-                    var timeInputs = new _TimeInputs(row),
-                        select = _domQueries.select(row.element),
-                        popup, menuItems;
+                    const select = _domQueries.select(row.element);
+                    let popup, menuItems;
 
-                    timeInputs.fill('08:00', '12:00');
+                    row.timeInputs().fill('08:00', '12:00');
 
                     select.click();
                     popup = _domQueries.selectPopup(select);
@@ -221,8 +215,7 @@
                 }
 
                 function fillInSecond(row) {
-                    var timeInputs = new _TimeInputs(row);
-                    timeInputs.fill('12:30', '16:30');
+                    row.timeInputs().fill('12:30', '16:30');
                 }
 
                 fillInFirst(rows.items[0]);
