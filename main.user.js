@@ -1,5 +1,10 @@
 (function() {
     'use strict';
+    alert("x")
+
+    function elementConstructor(element) {
+        this.element = element;
+    }
 
     const dom = {};
 
@@ -8,9 +13,7 @@
         return new dom.Body(element);
     }
 
-    dom.Body = function (element) {
-        this.element = element;
-    };
+    dom.Body = elementConstructor;
     dom.Body.prototype.checkboxes = function () {
         const queryParts = [
             '[data-automation-id=fieldSetContent]',
@@ -54,9 +57,7 @@
         this._addButton.click();
     }
 
-    dom.EntryList = function (element) {
-        this.element = element;
-    };
+    dom.EntryList = elementConstructor;
 
     dom.Rows = function (elements) {
         this.items = [];
@@ -70,9 +71,7 @@
         return this.items[index];
     };
 
-    dom.Row = function (element) {
-        this.element = element;
-    };
+    dom.Row = elementConstructor;
     dom.Row.prototype.removeButton = function () {
         const element = this.element.querySelector(
             '[data-automation-id=panelSetRowDeleteButton]'

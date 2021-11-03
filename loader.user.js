@@ -6,7 +6,6 @@
 // @author       Glutexo
 // @match        https://wd5.myworkday.com/*
 // @grant        GM.xmlHttpRequest
-// @require      http://localhost:8000/main.user.js
 // ==/UserScript==
 
 (function() {
