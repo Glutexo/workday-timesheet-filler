@@ -1,3 +1,13 @@
+// ==UserScript==
+// @name         Workday Timesheet Filler
+// @namespace    http://github.com/Glutexo/
+// @version      0.1
+// @description  Fills in timesheets in the Workday app.
+// @author       Glutexo
+// @match        https://wd5.myworkday.com/*
+// @grant        GM.xmlHttpRequest
+// ==/UserScript==
+
 (function() {
     'use strict';
 

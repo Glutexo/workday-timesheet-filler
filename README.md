@@ -4,7 +4,7 @@ This script fills timesheets in Workday. It is very crude and still requires non
 
 ## How to use ##
 
-Install into Tampermonkey. Then, a black “Fill” button appears in the top-left corner of the Workday app.
+Install [_main.user.js_](main.user.js) into Tampermonkey. Then, a black “Fill” button appears in the top-left corner of the Workday app.
 
 From the Homepage:
 
