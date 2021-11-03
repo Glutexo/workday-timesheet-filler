@@ -129,21 +129,29 @@
     dom.Select.prototype.open = function () {
         this.element.click();
     };
-    dom.Select.prototype.popup = function () {
-        const id = CSS.escape(this.element.id),
-            selectors = [
-                '[data-automation-id=selectWidget-SuggestionPopup]',
-                `[data-associated-widget='${id}']`
-            ], query = selectors.join(''),
-            element = document.querySelector(query)
-        return new dom.Popup(element);
-    };
     dom.Select.prototype.select = function (index) {
-        let menuItems;
-        this.open();
-        menuItems = this.popup().menuItems();
-        setTimeout(function() { menuItems[index].click(); }, 1000);
+        const selector = new dom.Selector(this, index)
+        selector.select();
     }
+
+    dom.Selector = function (select, index) {
+        this._select = select;
+        this.index = index;
+    };
+    dom.Selector.prototype.select = function () {
+        const body = document.querySelector('body'),
+            observer = new MutationObserver(this._callback),
+            options = {childList: true};
+        observer.observe(body, options);
+        this._select.open();
+    };
+    dom.Selector.prototype._callback = function (mutations, observer) {
+        const popupElement = mutations[0].addedNodes[0],
+            popup = new dom.Popup(popupElement),
+            menuItem = popup.menuItems()[this.index];
+        observer.disconnect();
+        setTimeout(menuItem.click, 1000);
+    };
 
     dom.Popup = function (element) {
         this.element = element;
