@@ -1,6 +1,5 @@
 (function() {
     'use strict';
-    alert("x")
 
     function elementConstructor(element) {
         this.element = element;
@@ -215,7 +214,7 @@
             function observeEntryList() {
                 function handleMutation(mutation, index, allMutations) {
                     if (
-                        mutation.type === "childList" &&
+                        mutation.type === 'childList' &&
                         mutation.target === entryList.element
                     ) {
                         const done = fillEntryRows();
