@@ -89,7 +89,7 @@
         return new dom.TimeInputs(elements);
     };
     dom.Row.prototype.select = function () {
-        let element = this.element.querySelector('[data-automation-id=selectWidget]');
+        const element = this.element.querySelector('[data-automation-id=selectWidget]');
         return new dom.Select(element);
     };
     dom.Row.prototype.removeButton = function () {
@@ -104,22 +104,17 @@
     };
 
     dom.TimeInputs = function (elements) {
-        this.elements = elements;
+        this.items = [];
+        for (const element of elements) {
+            const input = new dom.Input(element);
+            this.items.push(input);
+        }
     };
     dom.TimeInputs.prototype.IN = 0;
     dom.TimeInputs.prototype.OUT = 1;
-    dom.TimeInputs.prototype.inputs = function () {
-        let inputs = [];
-        for (const element of this.elements) {
-            const input = new dom.Input(element);
-            inputs.push(input);
-        }
-        return inputs;
-    };
     dom.TimeInputs.prototype.fill = function (in_value, out_value) {
-        const inputs = this.inputs();
-        inputs[this.IN].fill(in_value);
-        inputs[this.OUT].fill(out_value);
+        this.items[this.IN].fill(in_value);
+        this.items[this.OUT].fill(out_value);
     };
 
     dom.Select = function (element) {
@@ -233,13 +228,14 @@
         function fillEntryList() {
             function fillRowData(rows) {
                 function fillInFirst(row) {
-                    const select = row.select();
-                    row.timeInputs().fill('08:00', '12:00');
+                    const select = row.select(), timeInputs = row.timeInputs();
+                    timeInputs.fill('08:00', '12:00');
                     select.select(select.MEAL);
                 }
 
                 function fillInSecond(row) {
-                    row.timeInputs().fill('12:30', '16:30');
+                    const timeInputs = row.timeInputs();
+                    timeInputs.fill('12:30', '16:30');
                 }
 
                 fillInFirst(rows.items[0]);
